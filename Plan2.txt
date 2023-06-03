@@ -1,0 +1,84 @@
+#Additional variant StartPointEdge/EndPointEdge "Pass"
+ can be between the classic  StartPoint/EndPoint points
+ now it linked to Angle of FirstRect/SecondRect
+
+InitStartPoint (0,0) of one angle of first Rect
+PevTypeEdge = null
+OutFromFieldLimit = false
+CreateFirstRect
+	BasePoint = InitStartPoint
+	(NormolizedRect, TypeAngleBasePoint) = GetNewRectForBasePoint(PevTypeEdge)
+		TypeAngle=SelectTypeAngleForBasePoint()
+					If (PevTypeEdge!= null)
+						SelectRandomTypeEdgeForPevTypeEdge(PevTypeEdge)
+					else
+						SelectRandomTypeEdge()
+		RadmonRect = GetNewRectForSelectedTypeAngle(BasePoint, TypeAngle)
+		NormolizedRect = GetNormalizedRect(RadmonRect)
+	DrawRect(NormolizedReact)
+	GetStartPointFindPath(NormolizedReact)
+		TypeEdge=SelectAnyTypeEdge()
+		SelectPointOnEdge(TypeEdge,NormolizedRect)
+	FirstRect,PevTypeEdge= NormolizedReact
+
+NumEdge = 0
+Cycle (if !OutFromFieldLimit || (IsLimitedMaxNumberEdge && ++NumEdge <= MaxNumberEnges)
+	TypeEdge=SelectAnyTypeEdge(FirstRect,PevTypeEdge)
+		If (PevTypeEdge!= null)
+			SelectAnyType Except (ContraEdge(PevTypeEdge))
+	StartPointEdge=SelectPointOnEdge(TypeEdge,NormolizedRect)
+	BasePoint = StartPointEdge
+	(NormolizedRect, TypeAngleBasePoint)  = GetNewRectForBasePoint(PevTypeEdge)
+	ExitFromFieldLimit(NormolizedRect,TypeAngleBasePoint)
+		attemp to out of Range of Field (in this case) the border the last Rect set on Border Field.
+	DrawRect(NormolizedRect)
+	EndPointEdge=GetPointOnEdgeFirstRect(First,TypeAngleBasePointOfSecRect)
+	Create struct Edge()
+		ConvertNormalizedRectToRectMinMax() for FirstRect/SecondRect
+	FirstRect,PevTypeEdge= NormolizedReact
+Select  final Point for FindPath
+	SecondRect SelectAnyTypeEdge Except PevTypeEdge
+	SelectPointOnEdge
+
+SelectRandomTypeAngleForBasePointForPevTypeEdge()
+	switch (PevTypeEdge)
+		Top:
+			TypeAngleForBasePoint = BottomLeft || BottomRight
+
+ExitFromFieldLimit(NormolizedRect,TypeAngleBasePoint)
+	switch (TypeAngleBasePoint)
+		BottomLeft:
+			Check TopRightAngle(Start + WeightHeigh)
+				if x > maxWidthField
+					NormolizedReact = CutAngle(NormolizedRect, CutType = Width)
+				if y >maxHeightField
+					NormolizedReact = CutAngle(NormolizedRect, CutType = Height)
+CutAngle(NormolizedRect, CutType)
+	switch (CutAngle)
+	 Width:
+		NormolizedReact=(Start,(Width=maxWidthField,oldHeight)
+	 Height:
+		NormolizedReact=(Start,(oldWidth,Height=maxHeightField)
+	Set OutFromFieldLimit=true
+
+Prepare Data for Analyse
+
+struct Rectangle
+{
+public Vector2 Min;
+public Vector2 Max;
+}
+struct Edge
+{
+public Rectangle First;
+public Rectangle Second;
+public Vector3 Start;
+public Vector3 End;
+}
+interface IPathFinder
+{
+IEnumerable<Vector2> GetPath(Vector2 A, Vector2 C, IEnumerable<Edge> edges);
+}
+
+
+

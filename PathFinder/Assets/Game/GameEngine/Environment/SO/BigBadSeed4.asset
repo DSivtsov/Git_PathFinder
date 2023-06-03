@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e75d33b12a803304b81eb53a3585f084, type: 3}
+  m_Name: BigBadSeed4
+  m_EditorClassIdentifier: 
+  CurrentSeed: 243538153
+  CenterX: 0
+  CenterY: 0
+  WidthField: 1920
+  HeightField: 1080
+  MinNumberEdges: 2
+  IsLimitedMaxNumberEdge: 1
+  MaxNumberEdges: 3
+  MinWidthRectangle: 150
+  MinHeightRectangle: 150
+  MinPercentEdge: 10
+  MaxPercentEdge: 60

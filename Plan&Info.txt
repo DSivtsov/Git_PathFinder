@@ -1,0 +1,36 @@
+Add default icon to ItemPrefab (for debuging)
+
+??public struct InstantiateInventoryItems convert to static class
+change in InventoryItemView the codetype from this. _.
+
+Add to MoneyStoragere that IsMoneyInfinity = false
+
+Item {Active View}
+
+Wallet(MonewStorage) {Model}
+InventoryListItem {Model}
+
+??reason for implement IsItemInSellProcess which will block most activity (drag/drop) in inventory
+
+TraderTable (Left Always Player Inventory) called by "Current Vendor (InventoryList, Wallet(MonewStorage))"
+	....
+	LoadOnScreenInventory(_playerItemsView("Item"),_playerListItemSO);
+	Item.LinkVisulItemWithSO(InventoryItemSO,Inventory)
+	
+??? Use  a Object PlaceHolderOfDragedItem [Oph] (common for all Inventory/TraderTable)
+	Hide at default
+	HideObject()
+	SetOnPossitionDragedItem()
+Made PlaceDragedItem as SingleTon(throught Injection)
+
+Refactoring WalletStorage ->(moneyStorage) {Model}
+	property bool CanSpend(ammount)
+	bool TrySpend(ammount)		//true in case success spending
+		CanSpend(ammount)
+	void SpendMoney(ammount)
+		throw Exception in wrong case
+		
+[INFO]		
+MoneyPanelAdapter {Presenter}
+ItemPanel {View}
+		
