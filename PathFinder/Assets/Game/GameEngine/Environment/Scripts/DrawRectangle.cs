@@ -22,17 +22,15 @@ namespace GameEngine.Environment
         /// </summary>
         /// <param name="normalizedRectangle">NormalizedRectangle</param>
         /// <param name="nameNewRectangle">name new GameObject</param>
-        [Button]
         public void Draw(NormalizedRectangle normalizedRectangle, string nameNewRectangle)
         {
             Transform transformRectangle = Instantiate<Transform>(_rectanglePrefab, _transformParent);
             transformRectangle.position = (Vector2)normalizedRectangle.BottomLeftAngel;
             transformRectangle.localScale = (Vector2)normalizedRectangle.SizeXY;
             transformRectangle.name = nameNewRectangle;
-            //transformRectangle.GetComponent<LineRenderer>().widthMultiplier = 5;
+            transformRectangle.GetComponent<LineRenderer>().widthMultiplier = 5;
         }
 
-        [Button]
         public void DeleteDrownRectangle()
         {
             foreach (Transform item in _transformParent)

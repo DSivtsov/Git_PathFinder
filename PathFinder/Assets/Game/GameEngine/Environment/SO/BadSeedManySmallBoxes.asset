@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e75d33b12a803304b81eb53a3585f084, type: 3}
-  m_Name: ManySmallBoxes
+  m_Name: BadSeedManySmallBoxes
   m_EditorClassIdentifier: 
   CurrentSeed: 655613308
   CenterX: 0
@@ -20,7 +20,7 @@ MonoBehaviour:
   NotOutFromFieldSize: 1
   MinNumberEdges: 3
   TryPutMaxNumberEdge: 1
-  MaxNumberEdges: 6
+  MaxNumberEdges: 7
   MinWidthRectangle: 100
   MinHeightRectangle: 100
   MinPercentEdge: 10

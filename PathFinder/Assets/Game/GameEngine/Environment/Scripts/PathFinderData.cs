@@ -48,12 +48,9 @@ namespace GameEngine.Environment
         [SerializeField] private Transform _prefabStartEdge;
         [SerializeField] private Transform _prefabEndEdge;
         [Header("RESULT")]
-        //[ShowInInspector, ReadOnly] private Vector2 _startPointFindPath;
-        //[ShowInInspector, ReadOnly] private Vector2 _endPointFindPath;
-        //[ShowInInspector, ReadOnly] private List<Edge> _listEdges;
-        [SerializeField] private Vector2 _startPointFindPath;
-        [SerializeField] private Vector2 _endPointFindPath;
-        [SerializeField] private List<Edge> _listEdges;
+        [ShowInInspector, ReadOnly] private Vector2 _startPointFindPath;
+        [ShowInInspector, ReadOnly] private Vector2 _endPointFindPath;
+        [ShowInInspector, ReadOnly] private List<Edge> _listEdges;
 
         private Transform _parentTransformAllPoint;
 
@@ -98,7 +95,6 @@ namespace GameEngine.Environment
             SetAndActivatePoint(_prefabInitialPoint, Vector2Int.zero);
         }
 
-        [Button]
         public void DeletePoints()
         {
             foreach (Transform item in _parentTransformAllPoint)

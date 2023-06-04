@@ -15,18 +15,20 @@ namespace GameEngine.PathFinder
 
         private Transform _parentTransformShowSteps;
 
-        public void InitShowPath(List<Vector2> pathFounded)
+        private void Awake() => _parentTransformShowSteps = transform;
+        //public void InitShowPath(List<Vector2> pathFounded)
+        //{
+        //    _pathFounded = pathFounded;
+        //    _parentTransformShowSteps = transform;
+        //}
+
+        //public List<Vector2> PathFounded => _pathFounded;
+
+        public void Show(List<Vector2> pathFounded)
         {
             _pathFounded = pathFounded;
-            _parentTransformShowSteps = transform;
-        }
-
-        public List<Vector2> PathFounded => _pathFounded;
-
-        [Button]
-        public void Show()
-        {
-            DeleteStepsPath();
+            
+            //DeleteStepsPath();
             if (_pathFounded != null)
             {
                 if (_pathFounded.Count > 0)

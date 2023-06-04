@@ -24,7 +24,6 @@ namespace GameEngine.PathFinder
             _pathFinderDataTransform = _pathFinderData.transform;
         }
 
-        [Button]
         public bool CheckData()
         {
             if (_pathFinderData == null || _pathFinderData.StartPointFindPath == null || _pathFinderData.EndPointFindPath == null

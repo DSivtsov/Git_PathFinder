@@ -14,11 +14,11 @@ namespace GameEngine.PathFinder
         [SerializeField] private PathFinderData _pathFinderData;
         [SerializeField] private CheckerInitialData _checkerInitialData;
         [SerializeField] private ShowPath _showPath;
-        [SerializeField] private GenerateField _generateField;
+        [SerializeField] private GeneratePathFinderData _generateField;
         [SerializeField] private DebugPathFinderManager _debugPathFinderManager;
         [Header("DEBUG")]
-        [SerializeField] private bool _createFieldAutoStart = false;
-        [SerializeField] private bool _callGetPathAutoStart = false;
+        [SerializeField] private bool _generateDataAutoRun = false;
+        [SerializeField] private bool _getPathAutoRun = false;
         [SerializeField] private bool _turnOnDebugPathFinderManager = false;
 
 
@@ -28,7 +28,7 @@ namespace GameEngine.PathFinder
         private void Awake()
         {
             _checkerInitialData.InitialData(_pathFinderData);
-            FieldSettingSO fieldSetting = _generateField.FieldSetting;
+            GenerationSettingSO fieldSetting = _generateField.FieldSetting;
             if (fieldSetting)
                 _debugPathFinderManager.InitDebugPathFinderManager(fieldSetting.WidthField, fieldSetting.HeightField); 
             else
@@ -37,9 +37,7 @@ namespace GameEngine.PathFinder
 
         private void Start()
         {
-            if (_createFieldAutoStart)
-                _generateField.CreateField();
-            if (_callGetPathAutoStart)
+            if (_getPathAutoRun)
                 CallGetPath();
         }
 
@@ -51,12 +49,17 @@ namespace GameEngine.PathFinder
             else
                 DebugFinder.StartDebugFinder(_debugPathFinderManager,activateDebugPathFinder: false);
 
+            _showPath.DeleteStepsPath();
+
+            if (_generateDataAutoRun)
+                _generateField.GenerateNewData();
+
             if (_checkerInitialData.CheckData())
             {
                 _iFinder = new Finder();
                 _pathFounded = _iFinder.GetPath(_pathFinderData.StartPointFindPath, _pathFinderData.EndPointFindPath, _pathFinderData.ListEdges).ToList();
-                _showPath.InitShowPath(_pathFounded);
-                _showPath.Show(); 
+                //_showPath.InitShowPath(_pathFounded);
+                _showPath.Show(_pathFounded); 
             }
         }
 

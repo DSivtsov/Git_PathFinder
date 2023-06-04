@@ -8,15 +8,14 @@ using GMTools.Common;
 
 namespace GameEngine.Environment
 {
-    public class GenerateField : MonoBehaviour
+    public class GeneratePathFinderData : MonoBehaviour
     {
         [SerializeField] private PathFinderData _pathFinderData;
-        [SerializeField] private FieldSettingSO _fieldSetting;
+        [SerializeField] private GenerationSettingSO _generationSetting;
         [SerializeField] private DrawRectangle _drawRectangle;
         [Header("DEBUG")]
         [SerializeField] private bool _useSeedFromFieldSettingSO = false;
         [SerializeField] private bool _showUsedRandomSeed = false;
-        [SerializeField] private bool _startAutomaticly = true;
 
         private System.Random _random;
         private int _widthHalfField;
@@ -24,15 +23,14 @@ namespace GameEngine.Environment
         //To Pass Minimum number of Edges
         private int _maxWidthRectangle;
         private int _maxHeightRectangle;
-        private bool _wasOutFromFieldLimit;
         private const int NUMEDGES = 4;
         private const int NUMEANGLE = 4;
-        private int NumEdge;
+        private int numEdge;
 
         private NormalizedRectangle _firstRect;
         private NormalizedRectangle _secondRect;
 
-        public FieldSettingSO FieldSetting => _fieldSetting;
+        public GenerationSettingSO FieldSetting => _generationSetting;
 
         private void Injection()
         {
@@ -48,44 +46,33 @@ namespace GameEngine.Environment
         public void Awake()
         {
             Injection();
-            InitCreateField();
+            Init();
         }
 
-        private void Start()
+        private void Init()
         {
-            if (_startAutomaticly)
-            {
-                CreateField(); 
-            }
-        }
-
-        private void InitCreateField()
-        {
-            _widthHalfField = _fieldSetting.WidthField / 2;
-            _heightHalfField = _fieldSetting.HeightField / 2;
+            _widthHalfField = _generationSetting.WidthField / 2;
+            _heightHalfField = _generationSetting.HeightField / 2;
             CountFrame.DebugLogUpdate($"Field {_widthHalfField} {_heightHalfField}");
             GetMaximumHeightWidthForRectangle();
             NormalizedRectangle.InitNormalizedRectangle(_widthHalfField, _heightHalfField, _drawRectangle);
-            _pathFinderData.Init(_fieldSetting.MinNumberEdges);
+            _pathFinderData.Init(_generationSetting.MinNumberEdges);
         }
-
-        [Button]
-        public void CreateField()
+ 
+        public void GenerateNewData()
         {
-            CountFrame.DebugLogWarningUpdate("DEBUG called CreateField():");
+            CountFrame.DebugLogWarningUpdate("DEBUG called GenerateNewData()");
 
             DeleteGameObjects();
+            _pathFinderData.SetInitialPoint();
 
             InitRandom();
 
-            _wasOutFromFieldLimit = false;
-
             _firstRect = CreateInitialRec();
-            _firstRect.Draw();
 
             _pathFinderData.StartPointFindPath = CreateStartEndPointFindPath(_firstRect);
 
-            CreateEdges();
+            CreateEdges(_generationSetting.MinNumberEdges, _generationSetting.NotOutFromFieldSize, _generationSetting.TryPutMaxNumberEdge, _generationSetting.MaxNumberEdges);
 
             _pathFinderData.EndPointFindPath = CreateStartEndPointFindPath(_secondRect);
         }
@@ -94,7 +81,6 @@ namespace GameEngine.Environment
         {
             _drawRectangle.DeleteDrownRectangle();
             _pathFinderData.DeletePoints();
-            _pathFinderData.SetInitialPoint();
             _pathFinderData.ClearPreviousResults();
         }
 
@@ -102,8 +88,8 @@ namespace GameEngine.Environment
         {
             if (_useSeedFromFieldSettingSO)
             {
-                Debug.Log($"{this}: Will used the SEED={_fieldSetting.CurrentSeed} from SO [{_fieldSetting.name}] ");
-                _random = new System.Random(_fieldSetting.CurrentSeed); 
+                Debug.Log($"{this}: Will used the SEED={_generationSetting.CurrentSeed} from SO [{_generationSetting.name}] ");
+                _random = new System.Random(_generationSetting.CurrentSeed); 
             }
             else
             {
@@ -126,16 +112,18 @@ namespace GameEngine.Environment
             return GetRandomPointOnEdge(rect, edgeTypeWhereWillStartPointFindPath);
         }
 
-        private void CreateEdges()
+        private void CreateEdges(int minNumberEdges, bool notOutFromFieldSize, bool tryPutMaxNumberEdge, int maxNumberEdges)
         {
-            NumEdge = 0;
+            numEdge = 0;
             EdgeType prevUsedEdgeType = EdgeType.Nothing;
+            bool rectanglesWasOutField = false;
 
-            while (!_wasOutFromFieldLimit && (_fieldSetting.IsLimitedMaxNumberEdge && NumEdge < _fieldSetting.MaxNumberEdges))
+            while ((numEdge < minNumberEdges) ||
+                ((tryPutMaxNumberEdge && maxNumberEdges > numEdge) && !(notOutFromFieldSize && rectanglesWasOutField)))
             {
-                CountFrame.DebugLogUpdate($"NumEdge={NumEdge}");
+                CountFrame.DebugLogUpdate($"NumEdge={numEdge}");
 
-                EdgeType edgeTypeWhereWillNextRect = (NumEdge == 0) ? SelectRandomAnyEdgeType() : SelectRandomEdgeType(prevUsedEdgeType);
+                EdgeType edgeTypeWhereWillNextRect = (numEdge == 0) ? SelectRandomAnyEdgeType() : SelectRandomEdgeType(prevUsedEdgeType);
                 CountFrame.DebugLogUpdate($"Next Rec will at [{edgeTypeWhereWillNextRect}] Edge");
 
                 Vector2Int startPointOnEdge = GetRandomPointOnEdge(_firstRect, edgeTypeWhereWillNextRect);
@@ -146,18 +134,18 @@ namespace GameEngine.Environment
 
                 _secondRect = GetNewNormalizedRectangle(startPointOnEdge, selectedAngleTypeBasePoint);
 
-                _wasOutFromFieldLimit = _secondRect.CutRectByFieldLimit(selectedAngleTypeBasePoint);
+                rectanglesWasOutField = notOutFromFieldSize ? _secondRect.CutRectByFieldLimit(selectedAngleTypeBasePoint) : false;
 
                 _secondRect.Draw();
 
                 Vector2Int endPointEdge = FindEndPointEdge(startPointOnEdge, edgeTypeWhereWillNextRect, selectedAngleTypeBasePoint);
 
                 Edge edge = _pathFinderData.AddEdge(_firstRect, _secondRect, startPointOnEdge, endPointEdge);
-                _pathFinderData.CreateDebugEdgePoints(edge, NumEdge);
+                _pathFinderData.CreateDebugEdgePoints(edge, numEdge);
 
                 _firstRect = _secondRect;
                 prevUsedEdgeType = edgeTypeWhereWillNextRect;
-                NumEdge++;
+                numEdge++;
             }
         }
 
@@ -245,13 +233,14 @@ namespace GameEngine.Environment
 
         private NormalizedRectangle CreateInitialRec()
         {
-            Vector2Int basePoint = new Vector2Int(_fieldSetting.CenterX, _fieldSetting.CenterY);
+            Vector2Int basePoint = new Vector2Int(_generationSetting.CenterX, _generationSetting.CenterY);
 
             AngleType selectedAngleTypeBasePoint = SelectAnyAngleTypeForBasePoint();
 
             CountFrame.DebugLogUpdate($"basePoint={basePoint} selectedAngleTypeForBasePoint[{selectedAngleTypeBasePoint}]");
             NormalizedRectangle newNormalizedRectangle = GetNewNormalizedRectangle(basePoint, selectedAngleTypeBasePoint);
-            
+            newNormalizedRectangle.Draw();
+
             return newNormalizedRectangle;
         }
 
@@ -344,8 +333,8 @@ namespace GameEngine.Environment
 
         private Vector2Int GetShiftToOtherAngleRectangle(AngleType basePointAngleType)
         {
-            int widthRectangle = _random.Next(_fieldSetting.MinWidthRectangle, (_maxWidthRectangle + 1));
-            int heightRectangle = _random.Next(_fieldSetting.MinHeightRectangle, (_maxHeightRectangle + 1));
+            int widthRectangle = _random.Next(_generationSetting.MinWidthRectangle, (_maxWidthRectangle + 1));
+            int heightRectangle = _random.Next(_generationSetting.MinHeightRectangle, (_maxHeightRectangle + 1));
             return new Vector2Int(widthRectangle, heightRectangle) * GetDirectionShiftToOtherAngleRectangle(basePointAngleType);
         }
 
@@ -371,10 +360,10 @@ namespace GameEngine.Environment
         /// </summary>
         private void GetMaximumHeightWidthForRectangle()
         {
-            _maxWidthRectangle = _widthHalfField / (_fieldSetting.MinNumberEdges + 1);
-            CheckCalculatedRectangleSize(ref _maxWidthRectangle, _fieldSetting.MinWidthRectangle);
-            _maxHeightRectangle = _heightHalfField / (_fieldSetting.MinNumberEdges + 1);
-            CheckCalculatedRectangleSize(ref _maxHeightRectangle, _fieldSetting.MinHeightRectangle);
+            _maxWidthRectangle = _widthHalfField / (_generationSetting.MinNumberEdges + 1);
+            CheckCalculatedRectangleSize(ref _maxWidthRectangle, _generationSetting.MinWidthRectangle);
+            _maxHeightRectangle = _heightHalfField / (_generationSetting.MinNumberEdges + 1);
+            CheckCalculatedRectangleSize(ref _maxHeightRectangle, _generationSetting.MinHeightRectangle);
 
             CountFrame.DebugLogUpdate($"_maxWidthRectangle[{_maxWidthRectangle}] _maxHeightRectangle[{_maxHeightRectangle}]");
         }
@@ -383,7 +372,7 @@ namespace GameEngine.Environment
         {
             if (calculatedRectangleSize < minRectangleSize)
             {
-                Debug.LogWarning($"CONFLICT: Calculated Rectangle Size ={_maxHeightRectangle} based on demanding number edges [{_fieldSetting.MinNumberEdges}]" +
+                Debug.LogWarning($"CONFLICT: Calculated Rectangle Size ={_maxHeightRectangle} based on demanding number edges [{_generationSetting.MinNumberEdges}]" +
                 $" less than Set Minimum Rectangle Size ={minRectangleSize}. Calculated Rectangle Size will be overrided  by the Minimum Rectangle Size");
                 calculatedRectangleSize = minRectangleSize;
             }
