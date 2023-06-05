@@ -28,10 +28,10 @@ namespace GameEngine.PathFinder
             _numRecBaseDot = numRecBaseDot;
         }
 
-        IEnumerable<SectorSolutions> ISolution.GetListSectorSolutions()
+        IEnumerable<(SectorSolutions, ConnectionDot)> ISolution.GetSectorSolutionsWithConnectionDots()
         {
             for (int i = 0; i < _arrSectorSolutions.Length; i++)
-                yield return _arrSectorSolutions[i];
+                yield return (_arrSectorSolutions[i], _arrConnectionDot[i]);
         }
 
         public IEnumerable<Line> GetListLinesFromSectorSolutions()

@@ -10,12 +10,13 @@ namespace GameEngine.Environment
 {
     public class GeneratePathFinderData : MonoBehaviour
     {
-        [SerializeField] private PathFinderData _pathFinderData;
         [SerializeField] private GenerationSettingSO _generationSetting;
-        [SerializeField] private DrawRectangle _drawRectangle;
         [Header("DEBUG")]
+        [SerializeField] private PathFinderDataShow _pathFinderDataShow;
         [SerializeField] private bool _useSeedFromFieldSettingSO = false;
         [SerializeField] private bool _showUsedRandomSeed = false;
+        [Space]
+        [ShowInInspector] private PathFinderData _pathFinderData;
 
         private System.Random _random;
         private int _widthHalfField;
@@ -32,20 +33,11 @@ namespace GameEngine.Environment
 
         public GenerationSettingSO FieldSetting => _generationSetting;
 
-        private void Injection()
-        {
-            CountFrame.DebugLogWarningUpdate("Injection()");
-            if (!_drawRectangle)
-            {
-                _drawRectangle = gameObject.GetComponent<DrawRectangle>();
-                if (!_drawRectangle)
-                    throw new NotImplementedException("GenerateField:  Not linked to DrawRectangle");
-            }
-        }
+        public PathFinderData PathFinderData => _pathFinderData;
 
         public void Awake()
         {
-            Injection();
+            _pathFinderDataShow = FindObjectOfType<PathFinderDataShow>();
             Init();
         }
 
@@ -55,18 +47,20 @@ namespace GameEngine.Environment
             _heightHalfField = _generationSetting.HeightField / 2;
             CountFrame.DebugLogUpdate($"Field {_widthHalfField} {_heightHalfField}");
             GetMaximumHeightWidthForRectangle();
-            NormalizedRectangle.InitNormalizedRectangle(_widthHalfField, _heightHalfField, _drawRectangle);
-            _pathFinderData.Init(_generationSetting.MinNumberEdges);
+            NormalizedRectangle.InitNormalizedRectangle(_widthHalfField, _heightHalfField, _pathFinderDataShow);
+
+            _pathFinderData = new PathFinderData(_generationSetting.MinNumberEdges);
         }
  
-        public void GenerateNewData()
+        public void GenerateData(bool overrideUseSeedFromField = false)
         {
             CountFrame.DebugLogWarningUpdate("DEBUG called GenerateNewData()");
 
-            DeleteGameObjects();
+            DeleteGenratedGameObjects();
+
             _pathFinderData.SetInitialPoint();
 
-            InitRandom();
+            InitRandom(overrideUseSeedFromField);
 
             _firstRect = CreateInitialRec();
 
@@ -77,16 +71,15 @@ namespace GameEngine.Environment
             _pathFinderData.EndPointFindPath = CreateStartEndPointFindPath(_secondRect);
         }
 
-        private void DeleteGameObjects()
+        private void DeleteGenratedGameObjects()
         {
-            _drawRectangle.DeleteDrownRectangle();
-            _pathFinderData.DeletePoints();
+            _pathFinderDataShow.DeleteDrownObjects();
             _pathFinderData.ClearPreviousResults();
         }
 
-        private void InitRandom()
+        private void InitRandom(bool overrideUseSeedFromField)
         {
-            if (_useSeedFromFieldSettingSO)
+            if (overrideUseSeedFromField || _useSeedFromFieldSettingSO)
             {
                 Debug.Log($"{this}: Will used the SEED={_generationSetting.CurrentSeed} from SO [{_generationSetting.name}] ");
                 _random = new System.Random(_generationSetting.CurrentSeed); 
@@ -140,8 +133,7 @@ namespace GameEngine.Environment
 
                 Vector2Int endPointEdge = FindEndPointEdge(startPointOnEdge, edgeTypeWhereWillNextRect, selectedAngleTypeBasePoint);
 
-                Edge edge = _pathFinderData.AddEdge(_firstRect, _secondRect, startPointOnEdge, endPointEdge);
-                _pathFinderData.CreateDebugEdgePoints(edge, numEdge);
+                _pathFinderData.AddEdge(_firstRect, _secondRect, startPointOnEdge, endPointEdge, numEdge);
 
                 _firstRect = _secondRect;
                 prevUsedEdgeType = edgeTypeWhereWillNextRect;

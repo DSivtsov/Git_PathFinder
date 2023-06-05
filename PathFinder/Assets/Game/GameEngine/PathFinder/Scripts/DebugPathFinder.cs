@@ -5,7 +5,7 @@ using System;
 
 namespace GameEngine.PathFinder
 {
-    public class DebugPathFinderManager : MonoBehaviour
+    public class DebugPathFinder : MonoBehaviour
     {
         [SerializeField] private Transform _prefabLineDebug;
         [SerializeField] private Transform _prefabDotCrossDebug;
@@ -25,7 +25,7 @@ namespace GameEngine.PathFinder
             _countLine = 0;
         }
 
-        public void InitDebugPathFinderManager(int fieldSettingWidthField, int fieldSettingHeightField)
+        public void InitDebugPathFinder(int fieldSettingWidthField, int fieldSettingHeightField)
         {
             _widthHalfField = fieldSettingWidthField / 2;
             _heightHalfField = fieldSettingHeightField / 2;

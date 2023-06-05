@@ -39,20 +39,19 @@ namespace GameEngine.Environment
     }
 
     [Serializable]
-    public class PathFinderData : MonoBehaviour
+    public class PathFinderData
     {
+        [ShowInInspector] private Vector2 _startPointFindPath;
+        [ShowInInspector] private Vector2 _endPointFindPath;
+        [ShowInInspector] private List<Edge> _listEdges;
 
-        [SerializeField] private Transform _prefabInitialPoint;
-        [SerializeField] private Transform _findPathStartPoint;
-        [SerializeField] private Transform _findPathEndPoint;
-        [SerializeField] private Transform _prefabStartEdge;
-        [SerializeField] private Transform _prefabEndEdge;
-        [Header("RESULT")]
-        [ShowInInspector, ReadOnly] private Vector2 _startPointFindPath;
-        [ShowInInspector, ReadOnly] private Vector2 _endPointFindPath;
-        [ShowInInspector, ReadOnly] private List<Edge> _listEdges;
+        private PathFinderDataShow _pathFinderDataShow;
 
-        private Transform _parentTransformAllPoint;
+        public PathFinderData(int minNumberEdges)
+        {
+            _listEdges = new List<Edge>(minNumberEdges);
+            _pathFinderDataShow = UnityEngine.Object.FindObjectOfType<PathFinderDataShow>();
+        }
 
         public List<Edge> ListEdges => _listEdges;
 
@@ -62,7 +61,7 @@ namespace GameEngine.Environment
             set
             {
                 _startPointFindPath = value;
-                SetAndActivatePoint(_findPathStartPoint, _startPointFindPath);
+                _pathFinderDataShow.DrawStartPoint(_startPointFindPath);
             }
         }
 
@@ -72,43 +71,23 @@ namespace GameEngine.Environment
             set
             {
                 _endPointFindPath = value;
-                SetAndActivatePoint(_findPathEndPoint, _endPointFindPath);
+                _pathFinderDataShow.DrawEndPoint(_endPointFindPath);
             }
-        }
-
-        private void SetAndActivatePoint(Transform prefabPoint, Vector2 pointPosition, string nameEdge="")
-        {
-            Transform transform = Instantiate<Transform>(prefabPoint, _parentTransformAllPoint);
-            transform.position = pointPosition;
-            if (nameEdge != "")
-                transform.name = nameEdge;
-        }
-
-        public void Init(int minNumberEdges)
-        {
-            _listEdges = new List<Edge>(minNumberEdges);
-            _parentTransformAllPoint = transform;
         }
 
         public void SetInitialPoint()
         {
-            SetAndActivatePoint(_prefabInitialPoint, Vector2Int.zero);
+            _pathFinderDataShow.DrawInitialPoint();
         }
 
-        public void DeletePoints()
-        {
-            foreach (Transform item in _parentTransformAllPoint)
-            {
-                UnityEngine.Object.Destroy(item.gameObject);
-            }
-        }
-        public Edge AddEdge(NormalizedRectangle firstRect, NormalizedRectangle secondRect, Vector2Int startPointOnEdge, Vector2Int endPointEdge)
+
+        public void AddEdge(NormalizedRectangle firstRect, NormalizedRectangle secondRect, Vector2Int startPointOnEdge, Vector2Int endPointEdge, int numEdge)
         {
             Rectangle first = new Rectangle(firstRect.BottomLeftAngel, firstRect.BottomLeftAngel + firstRect.SizeXY);
             Rectangle second = new Rectangle(secondRect.BottomLeftAngel, secondRect.BottomLeftAngel + secondRect.SizeXY);
             Edge edge = new Edge(first, second, startPointOnEdge, endPointEdge);
             _listEdges.Add(edge);
-            return edge;
+            _pathFinderDataShow.DrawEdgePoints(edge, numEdge);
         }
 
         public void ClearPreviousResults()
@@ -116,10 +95,11 @@ namespace GameEngine.Environment
             _listEdges.Clear();
         }
 
-        public void CreateDebugEdgePoints(Edge edge, int numEdge)
+
+        public override string ToString()
         {
-            SetAndActivatePoint(_prefabStartEdge, (Vector2)edge.Start, $"StartPointEdge{numEdge}");
-            SetAndActivatePoint(_prefabEndEdge, edge.End, $"EndPointEdge{numEdge}");
+            return $"StartPointFindPath{_startPointFindPath} EndPointFindPath{_endPointFindPath}" +
+                $" _listEdges.Count[{_listEdges.Count}]";
         }
     }
 }

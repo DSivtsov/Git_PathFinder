@@ -26,21 +26,15 @@ namespace GameEngine.PathFinder
             _connectionDot = connectionDot;
         }
 
-        IEnumerable<SectorSolutions> ISolution.GetListSectorSolutions()
+        IEnumerable<(SectorSolutions, ConnectionDot)> ISolution.GetSectorSolutionsWithConnectionDots()
         {
-            yield return _sectorSolutions;
+            yield return (_sectorSolutions, _connectionDot);
         }
 
         public IEnumerable<Line> GetListLinesFromSectorSolutions()
         {
             yield return _sectorSolutions.LineB;
             yield return _sectorSolutions.LineA;
-        }
-
-        internal List<Vector2> GetListEdgeDotsLastCrossingEdge()
-        {
-            //Dots on Edge where LineB & LineA cross this edge
-            throw new NotImplementedException();
         }
 
         IEnumerable<Vector2> ISolution.GetListBasedDotsSolution()

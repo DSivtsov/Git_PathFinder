@@ -126,10 +126,10 @@ namespace GameEngine.PathFinder
             {
                 if (!lineBTWDots.TryIntersecLineWithEdge(currentNumTestingEdge))
                 {
-                    DebugFinder.DebugTurnOn(false);
-                    DebugFinder.DebugDrawLineSegment(dotA, dotB, $"Not crossing Edge[{currentNumTestingEdge}]");
-                    DebugFinder.DebugTurnOn(true);
-                    Debug.Log($"Intersec Line Not crossing Edge[{currentNumTestingEdge}]");
+                    //DebugFinder.DebugTurnOn(true);
+                    //DebugFinder.DebugDrawLineSegment(dotA, dotB, $"Not crossing Edge[{currentNumTestingEdge}]");
+                    //DebugFinder.DebugTurnOn(true);
+                    Debug.Log($"Intersection Line Not crossing Edge[{currentNumTestingEdge}]");
                     directLineBTWdotsExist = false;
                     break;
                 }

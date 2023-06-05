@@ -7,11 +7,11 @@ namespace GameEngine.Environment
     /// </summary>
     public class FieldBackGround : MonoBehaviour
     {
-        [SerializeField] private GenerationSettingSO _fieldSetting;
         [SerializeField] private Color _color = new Color(0.53f, 0.72f, 0.6f);
 
         private void Awake()
         {
+            GenerationSettingSO _fieldSetting = FindObjectOfType<GeneratePathFinderData>().FieldSetting;
             CreateBackgroundField(_fieldSetting.CenterX, _fieldSetting.CenterY, _fieldSetting.WidthField, _fieldSetting.HeightField);
         }
 

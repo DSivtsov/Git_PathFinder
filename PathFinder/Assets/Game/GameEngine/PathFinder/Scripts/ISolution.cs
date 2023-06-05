@@ -12,11 +12,11 @@ namespace GameEngine.PathFinder
 
     public interface ISolution
     {
-        IEnumerable<SectorSolutions> GetListSectorSolutions();
         IEnumerable<Line> GetListLinesFromSectorSolutions();
         IEnumerable<Vector2> GetListBasedDotsSolution();
         int NumLastCrossedEdgeBySolution { get; }
         int NumRecBaseDotSolution { get; }
         IEnumerable<ConnectionDot> GetListConnectionDotsSolution();
+        IEnumerable<(SectorSolutions,ConnectionDot)> GetSectorSolutionsWithConnectionDots();
     }
 }

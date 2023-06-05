@@ -10,7 +10,7 @@ namespace GameEngine.Environment
         private Vector2Int _bottomLeftAngel;
         private Vector2Int _sizeXY;
 
-        private static DrawRectangle _drawRectangle;
+        private static PathFinderDataShow _pathFinderDataShow;
         private static bool _islinkedToDrawRectangle;
 
         public Vector2Int BottomLeftAngel => _bottomLeftAngel;
@@ -22,20 +22,20 @@ namespace GameEngine.Environment
 
         private static ushort _countRect = 0;
 
-        public static void InitNormalizedRectangle(int widthField, int heightField, DrawRectangle drawRectangle)
+        public static void InitNormalizedRectangle(int widthField, int heightField, PathFinderDataShow pathFinderDataShow)
         {
-            LinkToDrawRectangle(drawRectangle);
+            LinkToDrawRectangle(pathFinderDataShow);
 
             _widthField = widthField;
             _heightField = heightField;
             _isFieldLimiInited = true;
         }
 
-        private static void LinkToDrawRectangle(DrawRectangle drawRectangle)
+        private static void LinkToDrawRectangle(PathFinderDataShow drawRectangle)
         {
             if (drawRectangle)
             {
-                _drawRectangle = drawRectangle;
+                _pathFinderDataShow = drawRectangle;
                 _islinkedToDrawRectangle = true;
             }
             else
@@ -79,7 +79,7 @@ namespace GameEngine.Environment
         {
             if (_islinkedToDrawRectangle)
             {
-                _drawRectangle.Draw(this,$"Rect{_countRect-1}"); 
+                _pathFinderDataShow.DrawRectangle(this,$"Rect{_countRect-1}"); 
             }
             else
                 throw new NotImplementedException("NormalizedRectangle:  Not linked to DrawRectangle");
