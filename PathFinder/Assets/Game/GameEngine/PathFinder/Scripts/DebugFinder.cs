@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace GameEngine.PathFinder
 {
@@ -9,7 +11,7 @@ namespace GameEngine.PathFinder
         private static bool _activateDebugPathFinder = false;
         private static bool _debugOn;
 
-        [System.Diagnostics.Conditional("DEBUGFINDER")]
+        [Conditional("DEBUGFINDER")]
         public static void StartDebugFinder(DebugPathFinder debugPathFinder)
         {
             _debugPathFinder = debugPathFinder;
@@ -18,42 +20,42 @@ namespace GameEngine.PathFinder
             _debugOn = true;
         }
 
-        [System.Diagnostics.Conditional("DEBUGFINDER")]
+        [Conditional("DEBUGFINDER")]
         public static void StopDebugFinder()
         {
             _debugPathFinder = null;
             _activateDebugPathFinder = false;
         }
 
-        [System.Diagnostics.Conditional("DEBUGFINDER")]
+        [Conditional("DEBUGFINDER")]
         public static void DebugDrawDot(Vector2 dot)
         {
             if (_activateDebugPathFinder && _debugOn)
                 _debugPathFinder.ShowDotCross(dot, null);
         }
 
-        [System.Diagnostics.Conditional("DEBUGFINDER")]
+        [Conditional("DEBUGFINDER")]
         public static void DebugDrawDot(Vector2 dot, string nameDot)
         {
             if (_activateDebugPathFinder && _debugOn)
                 _debugPathFinder.ShowDotCross(dot, nameDot);
         }
 
-        [System.Diagnostics.Conditional("DEBUGFINDER")]
+        [Conditional("DEBUGFINDER")]
         public static void DebugDrawLine(Line line)
         {
             if (_activateDebugPathFinder && _debugOn)
                 _debugPathFinder.ShowLine(line, null);
         }
 
-        [System.Diagnostics.Conditional("DEBUGFINDER")]
+        [Conditional("DEBUGFINDER")]
         public static void DebugDrawLine(Line line, string nameLine)
         {
             if (_activateDebugPathFinder && _debugOn)
                 _debugPathFinder.ShowLine(line, nameLine);
         }
 
-        [System.Diagnostics.Conditional("DEBUGFINDER")]
+        [Conditional("DEBUGFINDER")]
         public static void DebugDrawLineSegment(Vector2 start, Vector2 end, string nameLine)
         {
             if (_activateDebugPathFinder && _debugOn)
@@ -61,15 +63,22 @@ namespace GameEngine.PathFinder
         }
 
 
-        [System.Diagnostics.Conditional("DEBUGFINDER")]
+        [Conditional("DEBUGFINDER")]
         public static void DebugDrawLine(List<Line> lines, string nameGroupLine)
         {
             if (_activateDebugPathFinder && _debugOn)
                 _debugPathFinder.ShowLine(lines, nameGroupLine);
         }
 
-        [System.Diagnostics.Conditional("DEBUGFINDER")]
+        [Conditional("DEBUGFINDER")]
         public static void DebugTurnOn(bool active) => _debugOn = active;
+
+
+        [Conditional("DEBUGFINDER")]
+        public static void DebugLog(string str) => Debug.Log(str);
+
+        [Conditional("DEBUGFINDER")]
+        public static void DebugLogWarning(string str) => Debug.LogWarning(str);
     }
 }
 

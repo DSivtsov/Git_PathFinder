@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System;
-using GMTools.Common;
 
 namespace GameEngine.Environment
 {
@@ -67,7 +66,7 @@ namespace GameEngine.Environment
             _bottomLeftAngel = new Vector2Int(bottomLeftX, bottomLeftY);
             _sizeXY = new Vector2Int(width, height);
             _countRect++;
-            CountFrame.DebugLogUpdate(this.ToString()); 
+            GenerateFinderDataDebug.DebugLogUpdate(this.ToString()); 
         }
 
         public override string ToString()
@@ -128,7 +127,7 @@ namespace GameEngine.Environment
                 //float delta = -_heightField - checkAngle.y;
                 _bottomLeftAngel.y = -_heightField;
                 _sizeXY.y -= delta;
-                CountFrame.DebugLogUpdate("CheckYMin() = true");
+                GenerateFinderDataDebug.DebugLogUpdate("CheckYMin() = true");
                 return true;
             }
             else
@@ -140,7 +139,7 @@ namespace GameEngine.Environment
             if (checkAngle.y > _heightField)
             {
                 _sizeXY.y = _heightField - _bottomLeftAngel.y;
-                CountFrame.DebugLogUpdate("CheckYMax() = true");
+                GenerateFinderDataDebug.DebugLogUpdate("CheckYMax() = true");
                 return true;
             }
             else
@@ -152,7 +151,7 @@ namespace GameEngine.Environment
             if (checkAngle.x > _widthField)
             {
                 _sizeXY.x = _widthField - _bottomLeftAngel.x;
-                CountFrame.DebugLogUpdate("CheckXMax() = true");
+                GenerateFinderDataDebug.DebugLogUpdate("CheckXMax() = true");
                 return true;
             }
             else
@@ -168,7 +167,7 @@ namespace GameEngine.Environment
                 //float delta = -_widthField - checkAngle.x;
                 _bottomLeftAngel.x = -_widthField;
                 _sizeXY.x -= delta;
-                CountFrame.DebugLogUpdate("CheckXMin() = true");
+                GenerateFinderDataDebug.DebugLogUpdate("CheckXMin() = true");
                 return true;
             }
             else

@@ -65,7 +65,7 @@ namespace GameEngine.PathFinder
 
             //we trying to find solution on next edge after Edge current solution
             int numEdgeNextAfterCurrent = numEdgeCurrentSolution + 1;
-            Debug.LogWarning($"SolutionForEdge(SolutionSide[{SolutionSide.Start}], closeEdge[{numEdgeCurrentSolution}], farEdge[{farthestNumEdge}])");
+            DebugFinder.DebugLogWarning($"SolutionForEdge(SolutionSide[{SolutionSide.Start}], closeEdge[{numEdgeCurrentSolution}], farEdge[{farthestNumEdge}])");
 
             int numRecBaseDot = StoreInfoEdges.GetNumRectWithEdgeForSolution(numEdgeCurrentSolution, SolutionSide.Start);
             List<Line>[] arrlistLines = new List<Line>[2] { new List<Line>(2), new List<Line>(2) };
@@ -77,7 +77,7 @@ namespace GameEngine.PathFinder
             // also we not test the edge where we take dots for testing (this edge the passed by definition also)
             foreach ((int currentTestingNumEdge, int nextEdgeAfterCurrentWhereTakenDots) in StoreInfoEdges.GetOrderedListNumEdges(numEdgeNextAfterCurrent, farthestNumEdge))
             {
-                Debug.Log($"Trying link with Edge[{currentTestingNumEdge}]");
+                DebugFinder.DebugLog($"Trying link with Edge[{currentTestingNumEdge}]");
                 for (int numBaseDot = 0; numBaseDot < newBaseDotsSectorSolutions.Length; numBaseDot++)
                 {
                     foreach (Vector2 dotEdge in StoreInfoEdges.GetListDotsEdge(currentTestingNumEdge))
@@ -92,14 +92,14 @@ namespace GameEngine.PathFinder
                 }
                 int countLinesBaseDotA = arrlistLines[0].Count();
                 int countLinesBaseDotB = arrlistLines[1].Count();
-                Debug.Log($"Was found {countLinesBaseDotA} LinkLines the current BaseDotA {newBaseDotsSectorSolutions[0]} with Edge[{currentTestingNumEdge}] ");
-                Debug.Log($"Was found {countLinesBaseDotB} LinkLines the current BaseDotB {newBaseDotsSectorSolutions[1]} with Edge[{currentTestingNumEdge}] ");
+                DebugFinder.DebugLog($"Was found {countLinesBaseDotA} LinkLines the current BaseDotA {newBaseDotsSectorSolutions[0]} with Edge[{currentTestingNumEdge}] ");
+                DebugFinder.DebugLog($"Was found {countLinesBaseDotB} LinkLines the current BaseDotB {newBaseDotsSectorSolutions[1]} with Edge[{currentTestingNumEdge}] ");
                 switch (countLinesBaseDotA + countLinesBaseDotB)
                 {
                     case 1:
                     case 2:
                     case 3:
-                        Debug.Log("SKIPPED: Can linked only by One-three Lines");
+                        DebugFinder.DebugLog("SKIPPED: Can linked only by One-three Lines");
                         break;
                     case 4:
                         return CreateSolutionForEdge(numRecBaseDot, arrlistLines, newBaseDotsSectorSolutions, currentTestingNumEdge, connectionDotCurrentSolution);
@@ -123,7 +123,7 @@ namespace GameEngine.PathFinder
         private static SolutionForEdgeForStartPoint CreateSolutionForEdge(int numRecBaseDot, List<Line>[] arrlistLines, Vector2[] newBaseDotsSectorSolutions,
             int currentTestingNumEdge, IEnumerable<ConnectionDot> connectionDotCurrentSolution)
         {
-            Debug.Log("Will create new {SolutionForEdgeForStartPoint}");
+            DebugFinder.DebugLog("Will create new {SolutionForEdgeForStartPoint}");
             SectorSolutions[] arrSectorSolutions = CreateArraySectorSolutions(arrlistLines, newBaseDotsSectorSolutions, $"StartSolutionForEdge[{currentTestingNumEdge}]");
             ConnectionDot[] arrConnectionDots = CreateArrayConnectionDots(newBaseDotsSectorSolutions, connectionDotCurrentSolution, $"DotForStartSolutionEdge[{currentTestingNumEdge}]");
             return new SolutionForEdgeForStartPoint(arrSectorSolutions, arrConnectionDots, currentTestingNumEdge, numRecBaseDot);

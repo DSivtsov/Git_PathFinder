@@ -10,7 +10,11 @@ namespace GameEngine.PathFinder
 {
     public class ShowPath : MonoBehaviour
     {
-        [SerializeField] Transform _prefabStepPath;
+        [SerializeField] private Transform _prefabStepPath;
+        [Header("DEBUG")]
+        [SerializeField] private bool _drawStepsPath = true;
+        [SerializeField] private bool _debugLogPointsPath = true;
+        [Space]
         [ReadOnly, ShowInInspector] private List<Vector2> _pathFounded;
 
         private Transform _parentTransformShowSteps;
@@ -25,8 +29,10 @@ namespace GameEngine.PathFinder
             {
                 if (_pathFounded.Count > 0)
                 {
-                    ShowPointsPath();
-                    ShowStepsPath();
+                    if (_debugLogPointsPath)
+                        DebugLogPointsPath();
+                    if (_drawStepsPath)
+                        DrawStepsPath(); 
                 }
                 else
                     Debug.LogWarning("Path not Found");
@@ -35,7 +41,7 @@ namespace GameEngine.PathFinder
                 throw new System.NotImplementedException("GetPath not run");
         }
 
-        private void ShowStepsPath()
+        private void DrawStepsPath()
         {
             Vector2 startDot = _pathFounded[0];
             for (int i = 1; i < _pathFounded.Count; i++)
@@ -50,8 +56,9 @@ namespace GameEngine.PathFinder
             }
         }
 
-        private void ShowPointsPath()
+        private void DebugLogPointsPath()
         {
+            Debug.LogWarning("DebugLogPointsPath");
             for (int i = 0; i < _pathFounded.Count; i++)
             {
                 Debug.Log($"[{i + 1}] {_pathFounded[i]}");

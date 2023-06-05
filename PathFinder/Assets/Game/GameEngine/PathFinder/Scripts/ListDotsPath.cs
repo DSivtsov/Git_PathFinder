@@ -43,10 +43,7 @@ namespace GameEngine.PathFinder
         private const int FactorIntersectToEdge = 2;
 
         private static List<ConnectionDot> _list;
-        //private static int _numDotHaveCrossingwithEndPath;
-        private static Vector2 _endPointFindPath;
         private static List<Vector2> _path;
-        private static IEnumerable<ConnectionDot> _connectionDotsHaveDirectLinkWithEndPath;
 
         internal static void InitListDotsPath(int numEdges)
         {
@@ -67,12 +64,17 @@ namespace GameEngine.PathFinder
         {
             //Always in path include minimum two dots - startPath and endPath
             _path = new List<Vector2>(_list.Count + INCLUDESTARTANDENDPATH);
+            SelectAnyPathWithBeginLastDotCrossing();
+            return _path.Reverse<Vector2>();
+        }
+
+        public static void ShowGraphPath()
+        {
+            Debug.LogWarning("ShowGraphPath");
             for (int i = 0; i < _list.Count; i++)
             {
                 Debug.Log($"[{i}] {_list[i]}");
             }
-            SelectAnyPathWithBeginLastDotCrossing();
-            return _path.Reverse<Vector2>();
         }
 
         //Not have special optimization for selecting Dots to Path

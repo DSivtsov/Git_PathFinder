@@ -118,7 +118,7 @@ namespace GameEngine.PathFinder
         internal static (bool isPassedEdge, Line line) TryLinkTwoDotsThroughEdges(Vector2 dotA, Vector2 dotB, int startNumEdge, int endNumEdge)
         {
             CorrectOrderEdgeNumbers(ref startNumEdge, ref endNumEdge);
-            Debug.Log($"TryLinkTwoDots({dotA}, {dotB}), check Edges from [{startNumEdge}] till [{endNumEdge}]");
+            DebugFinder.DebugLog($"TryLinkTwoDots({dotA}, {dotB}), check Edges from [{startNumEdge}] till [{endNumEdge}]");
             Line lineBTWDots = Line.CreateLine(dotA, dotB);
             bool directLineBTWdotsExist = true;
             int currentNumTestingEdge = startNumEdge;
@@ -129,7 +129,7 @@ namespace GameEngine.PathFinder
                     //DebugFinder.DebugTurnOn(true);
                     //DebugFinder.DebugDrawLineSegment(dotA, dotB, $"Not crossing Edge[{currentNumTestingEdge}]");
                     //DebugFinder.DebugTurnOn(true);
-                    Debug.Log($"Intersection Line Not crossing Edge[{currentNumTestingEdge}]");
+                    DebugFinder.DebugLog($"Intersection Line Not crossing Edge[{currentNumTestingEdge}]");
                     directLineBTWdotsExist = false;
                     break;
                 }

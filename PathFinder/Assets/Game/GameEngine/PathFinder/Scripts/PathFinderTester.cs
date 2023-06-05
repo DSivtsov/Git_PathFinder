@@ -18,6 +18,8 @@ namespace GameEngine.PathFinder
         [SerializeField] private bool _autoRun = false;
         [Tooltip("Will override setting in GeneratePathFinderData class")]
         [SerializeField] private bool _useSeedFromFieldSettingSO = false;
+        [SerializeField] private bool _showGraphPath = true;
+        [Header("DEBUGER PathFinder")]
         [SerializeField] private bool _turnOnDebugPathFinder = false;
         [SerializeField] private DebugPathFinder _prefabDebugPathFinder;
 
@@ -51,6 +53,11 @@ namespace GameEngine.PathFinder
 
             Finder finder = new Finder(_generatePathFinderData.PathFinderData);
             _stepsPath = finder.CheckDataAndGetPath();
+
+            if (_showGraphPath)
+            {
+                ListDotsPath.ShowGraphPath(); 
+            }
 
             if (_stepsPath != null)
                 _showPath.ShowStepsPath(_stepsPath.ToList());

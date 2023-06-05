@@ -1,9 +1,7 @@
 {
     "name": "GameEngine.Environment",
     "rootNamespace": "",
-    "references": [
-        "GUID:74d61541215b04046be7d14f439af646"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

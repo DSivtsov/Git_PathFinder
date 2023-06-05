@@ -55,13 +55,13 @@ namespace GameEngine.PathFinder
 
         internal static SolutionForDot FindAndCreateSolutionForDot(Vector2 baseDotSolution, int closestNumEdge, int farthestNumEdge, SolutionSide solutionSide)
         {
-            Debug.LogWarning($"FindAndCreateSolutionForDot(SolutionSide[{solutionSide}], closeEdge[{closestNumEdge}], farEdge[{farthestNumEdge}])");
+            DebugFinder.DebugLogWarning($"FindAndCreateSolutionForDot(SolutionSide[{solutionSide}], closeEdge[{closestNumEdge}], farEdge[{farthestNumEdge}])");
             int numRecBaseDot = StoreInfoEdges.GetNumRectWithEdgeForSolution(closestNumEdge, solutionSide);
             List<Line> listLines = new List<Line>(2);
 
             foreach ((int currentTestingNumEdge, int nextEdgeAftercurrent) in StoreInfoEdges.GetOrderedListNumEdges(closestNumEdge, farthestNumEdge))
             {
-                Debug.Log($"Trying link baseDotSolution with Edge[{currentTestingNumEdge}]");
+                DebugFinder.DebugLog($"Trying link baseDotSolution with Edge[{currentTestingNumEdge}]");
 
                 foreach (Vector2 dotEdge in StoreInfoEdges.GetListDotsEdge(currentTestingNumEdge))
                 {
@@ -74,11 +74,11 @@ namespace GameEngine.PathFinder
                         listLines.Add(lineBTWBaseDotAndEdge);
                     }
                 }
-                Debug.Log($"Was found {listLines.Count()} Lines, linked the {baseDotSolution} with Edge[{currentTestingNumEdge}] ");
+                DebugFinder.DebugLog($"Was found {listLines.Count()} Lines, linked the {baseDotSolution} with Edge[{currentTestingNumEdge}] ");
                 switch (listLines.Count())
                 {
                     case 1:
-                        Debug.Log("SKIPPED: Can linked only by One Line");
+                        DebugFinder.DebugLog("SKIPPED: Can linked only by One Line");
                         break;
                     case 2:
                         return CreateSolutionForDot(baseDotSolution, numRecBaseDot, listLines, currentTestingNumEdge, solutionSide);
@@ -92,14 +92,14 @@ namespace GameEngine.PathFinder
                 //link the baseDotSolution with the same edge where it exist, it will always be possible
                 listLines.Add(Line.CreateLine(baseDotSolution, dotEdge));
             }
-            Debug.Log("Will create a new {SolutionForDot} on closest Edge");
+            DebugFinder.DebugLog("Will create a new {SolutionForDot} on closest Edge");
             return CreateSolutionForDot(baseDotSolution, numRecBaseDot, listLines, closestNumEdge, solutionSide);
         }
 
         private static SolutionForDot CreateSolutionForDot(Vector2 baseDotSolution, int numRecBaseDot, List<Line> listLines, int numLastTestedEdge, SolutionSide solutionSide)
         {
             DebugFinder.DebugTurnOn(true);
-            Debug.Log($"New SolutionForDot({solutionSide}) numRecBaseDot={numRecBaseDot} numLastTestedEdge={numLastTestedEdge}");
+            DebugFinder.DebugLog($"New SolutionForDot({solutionSide}) numRecBaseDot={numRecBaseDot} numLastTestedEdge={numLastTestedEdge}");
             DebugFinder.DebugDrawLine(listLines, $"SolutionForDot{solutionSide}[{numLastTestedEdge}]");
             ConnectionDot initialConnectionDot;
             if (solutionSide != SolutionSide.End)

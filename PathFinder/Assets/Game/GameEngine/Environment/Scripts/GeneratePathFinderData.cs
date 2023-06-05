@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
-using GMTools.Common;
 
 namespace GameEngine.Environment
 {
@@ -45,7 +44,7 @@ namespace GameEngine.Environment
         {
             _widthHalfField = _generationSetting.WidthField / 2;
             _heightHalfField = _generationSetting.HeightField / 2;
-            CountFrame.DebugLogUpdate($"Field {_widthHalfField} {_heightHalfField}");
+            GenerateFinderDataDebug.DebugLogUpdate($"Field {_widthHalfField} {_heightHalfField}");
             GetMaximumHeightWidthForRectangle();
             NormalizedRectangle.InitNormalizedRectangle(_widthHalfField, _heightHalfField, _pathFinderDataShow);
 
@@ -54,7 +53,7 @@ namespace GameEngine.Environment
  
         public void GenerateData(bool overrideUseSeedFromField = false)
         {
-            CountFrame.DebugLogWarningUpdate("DEBUG called GenerateNewData()");
+            GenerateFinderDataDebug.DebugLogWarningUpdate("DEBUG called GenerateNewData()");
 
             DeleteGenratedGameObjects();
 
@@ -101,7 +100,7 @@ namespace GameEngine.Environment
         private Vector2Int CreateStartEndPointFindPath(NormalizedRectangle rect)
         {
             EdgeType edgeTypeWhereWillStartPointFindPath = SelectRandomAnyEdgeType();
-            CountFrame.DebugLogUpdate($"StartEndPointFindPath EdgeType[{edgeTypeWhereWillStartPointFindPath}]");
+            GenerateFinderDataDebug.DebugLogUpdate($"StartEndPointFindPath EdgeType[{edgeTypeWhereWillStartPointFindPath}]");
             return GetRandomPointOnEdge(rect, edgeTypeWhereWillStartPointFindPath);
         }
 
@@ -114,16 +113,16 @@ namespace GameEngine.Environment
             while ((numEdge < minNumberEdges) ||
                 ((tryPutMaxNumberEdge && maxNumberEdges > numEdge) && !(notOutFromFieldSize && rectanglesWasOutField)))
             {
-                CountFrame.DebugLogUpdate($"NumEdge={numEdge}");
+                GenerateFinderDataDebug.DebugLogUpdate($"NumEdge={numEdge}");
 
                 EdgeType edgeTypeWhereWillNextRect = (numEdge == 0) ? SelectRandomAnyEdgeType() : SelectRandomEdgeType(prevUsedEdgeType);
-                CountFrame.DebugLogUpdate($"Next Rec will at [{edgeTypeWhereWillNextRect}] Edge");
+                GenerateFinderDataDebug.DebugLogUpdate($"Next Rec will at [{edgeTypeWhereWillNextRect}] Edge");
 
                 Vector2Int startPointOnEdge = GetRandomPointOnEdge(_firstRect, edgeTypeWhereWillNextRect);
 
                 EdgeType usedEdgeType = edgeTypeWhereWillNextRect;
                 AngleType selectedAngleTypeBasePoint = SelectAngleTypeBasePoint(usedEdgeType);
-                CountFrame.DebugLogUpdate($"basePoint={startPointOnEdge} selectedAngleType[{selectedAngleTypeBasePoint}]");
+                GenerateFinderDataDebug.DebugLogUpdate($"basePoint={startPointOnEdge} selectedAngleType[{selectedAngleTypeBasePoint}]");
 
                 _secondRect = GetNewNormalizedRectangle(startPointOnEdge, selectedAngleTypeBasePoint);
 
@@ -229,7 +228,7 @@ namespace GameEngine.Environment
 
             AngleType selectedAngleTypeBasePoint = SelectAnyAngleTypeForBasePoint();
 
-            CountFrame.DebugLogUpdate($"basePoint={basePoint} selectedAngleTypeForBasePoint[{selectedAngleTypeBasePoint}]");
+            GenerateFinderDataDebug.DebugLogUpdate($"basePoint={basePoint} selectedAngleTypeForBasePoint[{selectedAngleTypeBasePoint}]");
             NormalizedRectangle newNormalizedRectangle = GetNewNormalizedRectangle(basePoint, selectedAngleTypeBasePoint);
             newNormalizedRectangle.Draw();
 
@@ -357,7 +356,7 @@ namespace GameEngine.Environment
             _maxHeightRectangle = _heightHalfField / (_generationSetting.MinNumberEdges + 1);
             CheckCalculatedRectangleSize(ref _maxHeightRectangle, _generationSetting.MinHeightRectangle);
 
-            CountFrame.DebugLogUpdate($"_maxWidthRectangle[{_maxWidthRectangle}] _maxHeightRectangle[{_maxHeightRectangle}]");
+            GenerateFinderDataDebug.DebugLogUpdate($"_maxWidthRectangle[{_maxWidthRectangle}] _maxHeightRectangle[{_maxHeightRectangle}]");
         }
 
         private void CheckCalculatedRectangleSize(ref int calculatedRectangleSize, int minRectangleSize)
