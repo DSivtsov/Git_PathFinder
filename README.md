@@ -128,17 +128,24 @@ Initialization for Cycle:
 
 Cycle:
 - Any method trying to find path which can connect current solution for StartPoint with solution for endPoint
-- All methods return IEnumerable<Vector2> if they found path (in other case null), Order of methods is important:
+- All methods return true if they found path (in other case false), Order of methods is important:
+```
 TryLinkCurrentBaseDotSolutionStartWithEndPoint();
 IsBothSolutionOnOneEdge();
 TryCrossingCurrentSolutionWithSolutionForEndPoint();
 TryCreateDirectLineLinkedDotsCurrentSolutionWithSolutionForEndPoint();
-- If all methods did not find the path (return null) the next iteration will be move the "Solution for StartPoint" to the endPoint more close 
+```
+- If all methods did not find the path (all returned false) the next iteration will be move the "Solution for StartPoint" to the endPoint more close 
+```
 SolutionForEdgeForStartPoint.CreateNewSolutionForEdge(_currentSolutionForStartPoint, _arredges.Length - 1);
+```
 - In case of error in found the Path (in case of correct initial Data it's not possible) in method SolutionForEdgeForStartPoint.CreateNewSolutionForEdge, exist check:
+```
 if (numEdgeCurrentSolution == farthestNumEdge)  
 		throw new NotSupportedException("Something wrong, because in this case the Finder.IsBothSolutionOnOneEdge() should have been called before");
+```
 It means that the intial Data contain the problem which we not detected at checking it
+
 
 
 

@@ -1,0 +1,16 @@
+Possible additional Checks (for external Data)
+
+	After CheckExistOverlapingRectangle()
+	
+	Can Check startPointFindPath and endPointFindPath must be not part of Edge (first or last)
+		because in that case the first or last edges not usefulness and can be skipped (thrown)
+	
+	Check Corect Edge (absent space between first and seconf rec)
+		If Contains in first and second rec
+		Dots StartEdge and EndEdge correctly set the its right order
+	
+	Before 	CheckExistOverlapingRectangle CheckAllRectangleCorrect
+		the Min & Max is thr BootomLeft and TopRight
+	
+	Check PointFindPath 
+		startPointFindPath and endPointFindPath Contains in first and last Rectangle

@@ -1,0 +1,20 @@
+//Two variant GetPath:
+- Store the Steps of Path in Process FindPath (more speed variant more prefer for Light objects)
+- Store PathSolutions in proces FindPath and after "FindStepPath from PathSolutions:" more slowly but can give possibility to select the PATH with different demands (more long, less shartTurn, no go align walls and so on)
+// (IEnumerable<Vector2>) will not include StartPath & EndPath
+
+-------------------/In case if Rectangle will not only Horisontal & Vertical/--------------------
+
+        //internal void LineCrossingEdge(Vector2 start, Vector2 end)
+        //{
+        //    //Demands get LineEdge from edge
+        //    //Build Matrix2x2 with LineEdges and Line
+        //    //Get Solution
+        //    throw new NotImplementedException();
+        //}
+
+        //internal void TryIntersecLineWithEdge(int currentTestingNumEdge)
+        //{
+        //    Edge curentEdge = _arrEdges[currentTestingNumEdge];
+        //    LineCrossingEdge(curentEdge.Start, curentEdge.End);
+        //}

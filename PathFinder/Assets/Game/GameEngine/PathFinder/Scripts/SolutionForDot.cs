@@ -78,7 +78,7 @@ namespace GameEngine.PathFinder
                 switch (listLines.Count())
                 {
                     case 1:
-                        DebugFinder.DebugLog("SKIPPED: Can linked only by One Line");
+                        DebugFinder.DebugLog("SKIPPED: Can linked only by One Line. Will use only the edge which have direct connection with both dots of edge");
                         break;
                     case 2:
                         return CreateSolutionForDot(baseDotSolution, numRecBaseDot, listLines, currentTestingNumEdge, solutionSide);
@@ -105,7 +105,6 @@ namespace GameEngine.PathFinder
             if (solutionSide != SolutionSide.End)
             {
                 //To ListDotsPath will be added ConnectionDot only for Start, all other (include the ConnectionDot for End) will be added in procees of Path Finding
-                //List<ConnectionDot> _initialPreviousConnectionDots = new List<ConnectionDot> { };
                 initialConnectionDot = new ConnectionDot(baseDotSolution, new List<ConnectionDot> { });
                 DebugFinder.DebugDrawDot(baseDotSolution, $"DotForSolution{solutionSide}");
                 ListDotsPath.AddConnectionDot(initialConnectionDot);

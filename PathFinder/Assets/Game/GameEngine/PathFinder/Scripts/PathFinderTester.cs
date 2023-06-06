@@ -54,13 +54,14 @@ namespace GameEngine.PathFinder
             Finder finder = new Finder(_generatePathFinderData.PathFinderData);
             _stepsPath = finder.CheckDataAndGetPath();
 
-            if (_showGraphPath)
-            {
-                ListDotsPath.ShowGraphPath(); 
-            }
-
             if (_stepsPath != null)
-                _showPath.ShowStepsPath(_stepsPath.ToList());
+            {
+                if (_showGraphPath)
+                {
+                    ListDotsPath.ShowGraphPath();
+                }
+                _showPath.ShowStepsPath(_stepsPath.ToList()); 
+            }
         }
 
         /// <summary>

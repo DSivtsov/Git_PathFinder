@@ -99,7 +99,7 @@ namespace GameEngine.PathFinder
                     case 1:
                     case 2:
                     case 3:
-                        DebugFinder.DebugLog("SKIPPED: Can linked only by One-three Lines");
+                        DebugFinder.DebugLog("SKIPPED: Can linked only by One-three Lines.Will use only the edge which have direct connection with both dots of edge");
                         break;
                     case 4:
                         return CreateSolutionForEdge(numRecBaseDot, arrlistLines, newBaseDotsSectorSolutions, currentTestingNumEdge, connectionDotCurrentSolution);
