@@ -16,24 +16,24 @@ namespace GameEngine.PathFinder
     /// </summary>
     public class ConnectionDot
     {
-        public readonly Vector2 baseDot;
+        public readonly Vector2 dot;
         /// <summary>
         /// can connected to more than one of other ConnectionDot
         /// </summary>
         public readonly IEnumerable<ConnectionDot> prevConnectionDots;
 
-        public ConnectionDot(Vector2 connectionDot, IEnumerable<ConnectionDot> prevConnectionDots)
+        public ConnectionDot(Vector2 dot, IEnumerable<ConnectionDot> prevConnectionDots)
         {
-            this.baseDot = connectionDot;
+            this.dot = dot;
             this.prevConnectionDots = prevConnectionDots;
         }
 
         public override string ToString()
         {
             IEnumerable<string> values = prevConnectionDots
-                .Select<ConnectionDot, string>((connectionDots) => (connectionDots == null) ? "NULL":connectionDots.baseDot.ToString()) ;
+                .Select<ConnectionDot, string>((connectionDots) => (connectionDots == null) ? "NULL":connectionDots.dot.ToString()) ;
             var listDots = string.Join(" ", values);
-            return $"connectionDot{baseDot} prevConnectionDots.Count[{prevConnectionDots.Count()}] listDots[{listDots}]";
+            return $"connectionDot{dot} prevConnectionDots.Count[{prevConnectionDots.Count()}] listDots[{listDots}]";
         }
     }
 
@@ -83,14 +83,14 @@ namespace GameEngine.PathFinder
             Debug.LogWarning("Will build the path through the lastDotCrossing");
             //in case of absent special demands to optimize the selection of Dots for Path, Let's just start from the last
             ConnectionDot connectionDotEndPath = _list.Last();
-            _path.Add(connectionDotEndPath.baseDot);
+            _path.Add(connectionDotEndPath.dot);
             IEnumerable<ConnectionDot> colectionPreviousConnectionDots = connectionDotEndPath.prevConnectionDots;
             //The dot of StartPath always incluided in list and have .prevConnectionDots  IEnumerable<ConnectionDot>.Count() == 0
             do
             {
                 //use the simply algorithm always take the first connectionDot in list
                 connectionDotEndPath = colectionPreviousConnectionDots.ElementAt(0);
-                _path.Add(connectionDotEndPath.baseDot);
+                _path.Add(connectionDotEndPath.dot);
                 colectionPreviousConnectionDots = connectionDotEndPath.prevConnectionDots;
             } while (colectionPreviousConnectionDots.Count() != 0);
         }

@@ -20,6 +20,8 @@ namespace GameEngine.PathFinder
         private ISolution _solutionForEndPoint;
         private int _numLastCrossingEdgeFromSolutionEnd;
 
+        private List<ConnectionDot> _connectionDotsHaveDirectLinkWithEndPath;
+
         public Finder(PathFinderData pathFinderData)
         {
             if (pathFinderData != null)
@@ -64,29 +66,38 @@ namespace GameEngine.PathFinder
             IEnumerable<Vector2> path;
             do
             {
-                path = TryLinkCurrentBaseDotSolutionStartWithEndPoint();
-                if (path != null) return path;
+                //path = TryLinkCurrentBaseDotSolutionStartWithEndPoint();
+                //if (path != null) return path;
+                if (TryLinkCurrentBaseDotSolutionStartWithEndPoint())
+                    break;
 
-                path = TryDetectThatBothSolutionOnOneEdge();
-                if (path != null) return path;
+                //path = TryDetectThatBothSolutionOnOneEdge();
+                //if (path != null) return path;
+                if (TryDetectThatBothSolutionOnOneEdge())
+                    break;
 
-                path = TryCrossingCurrentSolutionWithSolutionForEndPoint();
-                if (path != null) return path;
+                //path = TryCrossingCurrentSolutionWithSolutionForEndPoint();
+                //if (path != null) return path;
+                if (TryCrossingCurrentSolutionWithSolutionForEndPoint())
+                    break;
 
-                path = TryCreateDirectLineLinkedDotsCurrentSolutionWithSolutionForEndPoint();
-                if (path != null) return path;
+                //path = TryCreateDirectLineLinkedDotsCurrentSolutionWithSolutionForEndPoint();
+                //if (path != null) return path;
+                if (TryCreateDirectLineLinkedDotsCurrentSolutionWithSolutionForEndPoint())
+                    break;
 
                 _currentSolutionForStartPoint = SolutionForEdgeForStartPoint.FindAndCreateNewSolutionForEdgeForStartPoint(_currentSolutionForStartPoint, _arredges.Length - 1);
                 
             } while (true);
-            throw new NotSupportedException("This is not possible, inaccessible point, we must exit early or get an exception");
+            return ListDotsPath.GetPath();
+            //throw new NotSupportedException("This is not possible, inaccessible point, we must exit early or get an exception");
         }
 
         /// <summary>
         /// Try find Link between current SolutionForStartPoint with EndPoint
         /// </summary>
         /// <returns>if Link exist return path, in other case return null</returns>
-        private IEnumerable<Vector2> TryLinkCurrentBaseDotSolutionStartWithEndPoint()
+        private bool TryLinkCurrentBaseDotSolutionStartWithEndPoint()
         {
             DebugFinder.DebugLogWarning("TryLinkCurrentBaseDotSolutionStartWithEndPoint");
             int numLastCrossingEdgeFromSolutionStart = _currentSolutionForStartPoint.NumLastCrossedEdgeBySolution;
@@ -97,58 +108,74 @@ namespace GameEngine.PathFinder
                 if (isPassedEdges)
                 {
                     DebugFinder.DebugLog($"We found the direct Line from current Solution For StartPath to EndPath without any turns");
-                    DebugFinder.DebugDrawDot(_endPointFindPath);
-                    ConnectionDot connectionDotEndPath = new ConnectionDot(_endPointFindPath, _currentSolutionForStartPoint.GetListConnectionDotsSolution());
-                    ListDotsPath.AddConnectionDot(connectionDotEndPath);
-                    return ListDotsPath.GetPath();
+                    _connectionDotsHaveDirectLinkWithEndPath = _currentSolutionForStartPoint.GetListConnectionDotsSolution().ToList();
+                    AddConnectionDotForEndPoint(_currentSolutionForStartPoint.GetListConnectionDotsSolution());
+                    //return ListDotsPath.GetPath();
+                    return true;
                 }
             }
-            return null;
+            return false;
+        }
+
+        private void AddConnectionDotForEndPoint(IEnumerable<ConnectionDot> prevConnectionDots)
+        {
+            DebugFinder.DebugDrawDot(_endPointFindPath);
+            //ConnectionDot connectionDotEndPath = new ConnectionDot(_endPointFindPath, prevConnectionDots);
+            ListDotsPath.AddConnectionDot(new ConnectionDot(_endPointFindPath, prevConnectionDots));
         }
 
         /// <summary>
         /// Check that the Both Solution have dots on one Edge
         /// </summary>
         /// <returns>if Both Solution have dots on one Edge return path, in other case return null</returns>
-        private IEnumerable<Vector2> TryDetectThatBothSolutionOnOneEdge()
+        private bool TryDetectThatBothSolutionOnOneEdge()
         {
             DebugFinder.DebugLogWarning("TryDetectThatBothSolutionOnOneEdge");
             if (_numLastCrossingEdgeFromSolutionEnd == _currentSolutionForStartPoint.NumLastCrossedEdgeBySolution)
             {
                 DebugFinder.DebugLog($"We found the Both Solution have dots on one Edge");
                 //Both Solution have dots on one Edge, the can be SolutionForDot (2 DotCross) and SolutionForEdfe (4 DotCross)
-                IEnumerable<ConnectionDot> connectionDotsHaveDirectLinkWithEndPath = BothSolutionHaveDotsOnOneEdge();
-                DebugFinder.DebugDrawDot(_endPointFindPath);
-                ConnectionDot connectionDotEndPath = new ConnectionDot(_endPointFindPath, connectionDotsHaveDirectLinkWithEndPath);
-                ListDotsPath.AddConnectionDot(connectionDotEndPath);
-                return ListDotsPath.GetPath();
+                //IEnumerable<ConnectionDot> connectionDotsHaveDirectLinkWithEndPath = BothSolutionHaveDotsOnOneEdge();
+                Edge edge = _arredges[_currentSolutionForStartPoint.NumLastCrossedEdgeBySolution];
+                IEnumerable<ConnectionDot> prevConnectionDots = _currentSolutionForStartPoint.GetListConnectionDotsSolution();
+                DebugFinder.DebugDrawDot(edge.Start);
+                ConnectionDot connectionDotEdgeStart = new ConnectionDot(edge.Start, prevConnectionDots);
+                ListDotsPath.AddConnectionDot(connectionDotEdgeStart);
+                DebugFinder.DebugDrawDot(edge.End);
+                ConnectionDot connectionDotEdgeEnd = new ConnectionDot(edge.End, prevConnectionDots);
+                ListDotsPath.AddConnectionDot(connectionDotEdgeEnd);
+                _connectionDotsHaveDirectLinkWithEndPath = new List<ConnectionDot> { connectionDotEdgeStart, connectionDotEdgeEnd };
+                AddConnectionDotForEndPoint(new List<ConnectionDot> { connectionDotEdgeStart, connectionDotEdgeEnd });
+
+                //DebugFinder.DebugDrawDot(_endPointFindPath);
+                //ConnectionDot connectionDotEndPath = new ConnectionDot(_endPointFindPath, connectionDotsHaveDirectLinkWithEndPath);
+                //ListDotsPath.AddConnectionDot(connectionDotEndPath);
+                //return ListDotsPath.GetPath();
+                return true;
             }
-            return null;
+            return false;
         }
 
-        private IEnumerable<ConnectionDot> BothSolutionHaveDotsOnOneEdge()
-        {
-            Edge edge = _arredges[_currentSolutionForStartPoint.NumLastCrossedEdgeBySolution];
-            IEnumerable<ConnectionDot> prevConnectionDots = _currentSolutionForStartPoint.GetListConnectionDotsSolution();
-            DebugFinder.DebugDrawDot(edge.Start);
-            ConnectionDot connectionDotEdgeStart = new ConnectionDot(edge.Start, prevConnectionDots);
-            ListDotsPath.AddConnectionDot(connectionDotEdgeStart);
-            DebugFinder.DebugDrawDot(edge.End);
-            ConnectionDot connectionDotEdgeEnd = new ConnectionDot(edge.End, prevConnectionDots);
-            ListDotsPath.AddConnectionDot(connectionDotEdgeEnd);
-            return new List<ConnectionDot> { connectionDotEdgeStart, connectionDotEdgeEnd };
-        }
+        //private IEnumerable<ConnectionDot> BothSolutionHaveDotsOnOneEdge()
+        //{
+        //    Edge edge = _arredges[_currentSolutionForStartPoint.NumLastCrossedEdgeBySolution];
+        //    IEnumerable<ConnectionDot> prevConnectionDots = _currentSolutionForStartPoint.GetListConnectionDotsSolution();
+        //    DebugFinder.DebugDrawDot(edge.Start);
+        //    ConnectionDot connectionDotEdgeStart = new ConnectionDot(edge.Start, prevConnectionDots);
+        //    ListDotsPath.AddConnectionDot(connectionDotEdgeStart);
+        //    DebugFinder.DebugDrawDot(edge.End);
+        //    ConnectionDot connectionDotEdgeEnd = new ConnectionDot(edge.End, prevConnectionDots);
+        //    ListDotsPath.AddConnectionDot(connectionDotEdgeEnd);
+        //    return new List<ConnectionDot> { connectionDotEdgeStart, connectionDotEdgeEnd };
+        //}
 
-        /*
-         * 
-         */
-        private List<ConnectionDot> _connectionDotsHaveDirectLinkWithEndPath;
+
         private Dictionary<Vector2, List<ConnectionDot>> _connectionDotsOnLastCrossingEdgeFromCurrentSolution;
         /// <summary>
         /// Try find crossing of Lines from the SolutionStart with Lines from SolutionEndPoint
         /// </summary>
         /// <returns>if crossing exist return path, in other case return null</returns>
-        private IEnumerable<Vector2> TryCrossingCurrentSolutionWithSolutionForEndPoint()
+        private bool TryCrossingCurrentSolutionWithSolutionForEndPoint()
         {
             DebugFinder.DebugLogWarning("TryCrossingCurrentSolutionWithSolutionForEndPoint");
             _connectionDotsOnLastCrossingEdgeFromCurrentSolution = new Dictionary<Vector2, List<ConnectionDot>>(2);
@@ -217,12 +244,14 @@ namespace GameEngine.PathFinder
             {
                 DebugFinder.DebugLog($"connectionDotsHaveDirectLinkWithEndPath={_connectionDotsHaveDirectLinkWithEndPath.Count}");
                 //It means that we have found a Path all dots in _listDotCrossing
-                DebugFinder.DebugDrawDot(_endPointFindPath);
-                ConnectionDot connectionDotEndPath = new ConnectionDot(_endPointFindPath, _connectionDotsHaveDirectLinkWithEndPath);
-                ListDotsPath.AddConnectionDot(connectionDotEndPath);
-                return ListDotsPath.GetPath();
+                //DebugFinder.DebugDrawDot(_endPointFindPath);
+                //ConnectionDot connectionDotEndPath = new ConnectionDot(_endPointFindPath, _connectionDotsHaveDirectLinkWithEndPath);
+                //ListDotsPath.AddConnectionDot(connectionDotEndPath);
+                AddConnectionDotForEndPoint(_connectionDotsHaveDirectLinkWithEndPath);
+                //return ListDotsPath.GetPath();
+                return true;
             }
-            return null;
+            return false;
         }
 
         /// <summary>
@@ -306,7 +335,7 @@ namespace GameEngine.PathFinder
         /// Try create direct Line between baseDot of SectorSolutions from current SolutionStart with baseDot of SectorSolutions from SolutionForEndPoint
         /// </summary>
         /// <returns>if the lines created return path, in other case return null</returns>
-        private IEnumerable<Vector2> TryCreateDirectLineLinkedDotsCurrentSolutionWithSolutionForEndPoint()
+        private bool TryCreateDirectLineLinkedDotsCurrentSolutionWithSolutionForEndPoint()
         {
             DebugFinder.DebugLogWarning("TryCreateDirectLineLinkedDotsCurrentSolutionWithSolutionForEndPoint");
             int numEdgeCurrentSolutionStart = _currentSolutionForStartPoint.NumLastCrossedEdgeBySolution;
@@ -322,7 +351,7 @@ namespace GameEngine.PathFinder
              * - ConnectionDot in ListDotsPath can be insert in any order (position in the list does not affect their relationship)
              */
             List<ConnectionDot> connectionDotsForCurrentDotSolutionEnd;
-            List<ConnectionDot> connectionDotsHaveDirectLinkWithEndPath = new List<ConnectionDot>(2);
+            List<ConnectionDot> _connectionDotsHaveDirectLinkWithEndPath = new List<ConnectionDot>(2);
             foreach (Vector2 dotEdgeEnd in StoreInfoEdges.GetListDotsEdge(_numLastCrossingEdgeFromSolutionEnd))
             {
                 connectionDotsForCurrentDotSolutionEnd = new List<ConnectionDot>(2);
@@ -349,19 +378,21 @@ namespace GameEngine.PathFinder
                     ConnectionDot connectionDotFromFromSolutionEnd = new ConnectionDot(dotEdgeEnd, connectionDotsForCurrentDotSolutionEnd);
                     DebugFinder.DebugLog($"We found [{connectionDotsForCurrentDotSolutionEnd.Count}] direct lines between the dotEndPath {dotEdgeEnd} and the dots of CurrentSolutionStart");
                     ListDotsPath.AddConnectionDot(connectionDotFromFromSolutionEnd);
-                    connectionDotsHaveDirectLinkWithEndPath.Add(connectionDotFromFromSolutionEnd);
+                    _connectionDotsHaveDirectLinkWithEndPath.Add(connectionDotFromFromSolutionEnd);
                 }
             }
 
-            if (connectionDotsHaveDirectLinkWithEndPath.Count != 0)
+            if (_connectionDotsHaveDirectLinkWithEndPath.Count != 0)
             {
                 //It means that we have found a direct lines between the edge of currentSolution and the solution for PointEndPath
-                DebugFinder.DebugDrawDot(_endPointFindPath);
-                ConnectionDot connectionDotEndPath = new ConnectionDot(_endPointFindPath, connectionDotsHaveDirectLinkWithEndPath);
-                ListDotsPath.AddConnectionDot(connectionDotEndPath);
-                return ListDotsPath.GetPath();
+                //DebugFinder.DebugDrawDot(_endPointFindPath);
+                //ConnectionDot connectionDotEndPath = new ConnectionDot(_endPointFindPath, connectionDotsHaveDirectLinkWithEndPath);
+                //ListDotsPath.AddConnectionDot(connectionDotEndPath);
+                AddConnectionDotForEndPoint(_connectionDotsHaveDirectLinkWithEndPath);
+                //return ListDotsPath.GetPath();
+                return true;
             }
-            return null;
+            return false;
         }
     }
 }
