@@ -81,13 +81,13 @@ namespace GameEngine.Environment
         }
 
 
-        public void AddEdge(NormalizedRectangle firstRect, NormalizedRectangle secondRect, Vector2Int startPointOnEdge, Vector2Int endPointEdge, int numEdge)
+        public void AddEdge(NormalizedRectangle firstRect, NormalizedRectangle secondRect, Vector2Int startPointOnEdge, Vector2Int endPointEdge)
         {
             Rectangle first = new Rectangle(firstRect.BottomLeftAngel, firstRect.BottomLeftAngel + firstRect.SizeXY);
             Rectangle second = new Rectangle(secondRect.BottomLeftAngel, secondRect.BottomLeftAngel + secondRect.SizeXY);
             Edge edge = new Edge(first, second, startPointOnEdge, endPointEdge);
+            _pathFinderDataShow.DrawEdgePoints(edge, _listEdges.Count);
             _listEdges.Add(edge);
-            _pathFinderDataShow.DrawEdgePoints(edge, numEdge);
         }
 
         public void ClearPreviousResults()

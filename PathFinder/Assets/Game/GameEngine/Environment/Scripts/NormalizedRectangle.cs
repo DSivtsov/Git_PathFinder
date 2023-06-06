@@ -41,13 +41,6 @@ namespace GameEngine.Environment
                 throw new NotImplementedException("NormalizedRectangl.ctor():  Not have link to DrawRectangle");
         }
 
-        public NormalizedRectangle()
-        {
-            _bottomLeftAngel = Vector2Int.zero;
-            _sizeXY = Vector2Int.one;
-            _islinkedToDrawRectangle = false;
-        }
-
         public static void ClearNumRect() => _countRect = 0;
 
         public NormalizedRectangle(Vector2Int basePoint, Vector2Int shiftToOtherAngleRectangel)
@@ -121,10 +114,8 @@ namespace GameEngine.Environment
         private bool CheckYMin(Vector2Int checkAngle)
         {
             int delta = -_heightField - checkAngle.y;
-            //if (checkAngle.y < -_heightField)
             if (delta > 0)
             {
-                //float delta = -_heightField - checkAngle.y;
                 _bottomLeftAngel.y = -_heightField;
                 _sizeXY.y -= delta;
                 GenerateFinderDataDebug.DebugLogUpdate("CheckYMin() = true");
@@ -161,10 +152,8 @@ namespace GameEngine.Environment
         private bool CheckXMin(Vector2Int checkAngle)
         {
             int delta = -_widthField - checkAngle.x;
-            //if (checkAngle.x < -_widthField)
             if (delta > 0)
             {
-                //float delta = -_widthField - checkAngle.x;
                 _bottomLeftAngel.x = -_widthField;
                 _sizeXY.x -= delta;
                 GenerateFinderDataDebug.DebugLogUpdate("CheckXMin() = true");

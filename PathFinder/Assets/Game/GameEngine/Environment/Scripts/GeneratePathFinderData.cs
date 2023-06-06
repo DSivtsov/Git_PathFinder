@@ -61,13 +61,13 @@ namespace GameEngine.Environment
 
             InitRandom(overrideUseSeedFromField);
 
-            _firstRect = CreateInitialRec();
+            _firstRect = CreateRandomInitialRec();
 
-            _pathFinderData.StartPointFindPath = CreateStartEndPointFindPath(_firstRect);
+            _pathFinderData.StartPointFindPath = CreateRandomStartEndPointFindPath(_firstRect);
 
-            CreateEdges(_generationSetting.MinNumberEdges, _generationSetting.NotOutFromFieldSize, _generationSetting.TryPutMaxNumberEdge, _generationSetting.MaxNumberEdges);
+            CreateRandomEdgesAndRectangles();
 
-            _pathFinderData.EndPointFindPath = CreateStartEndPointFindPath(_secondRect);
+            _pathFinderData.EndPointFindPath = CreateRandomStartEndPointFindPath(_secondRect);
         }
 
         private void DeleteGenratedGameObjects()
@@ -97,21 +97,21 @@ namespace GameEngine.Environment
             }
         }
 
-        private Vector2Int CreateStartEndPointFindPath(NormalizedRectangle rect)
+        private Vector2Int CreateRandomStartEndPointFindPath(NormalizedRectangle rect)
         {
             EdgeType edgeTypeWhereWillStartPointFindPath = SelectRandomAnyEdgeType();
             GenerateFinderDataDebug.DebugLogUpdate($"StartEndPointFindPath EdgeType[{edgeTypeWhereWillStartPointFindPath}]");
             return GetRandomPointOnEdge(rect, edgeTypeWhereWillStartPointFindPath);
         }
 
-        private void CreateEdges(int minNumberEdges, bool notOutFromFieldSize, bool tryPutMaxNumberEdge, int maxNumberEdges)
+        private void CreateRandomEdgesAndRectangles()
         {
             numEdge = 0;
             EdgeType prevUsedEdgeType = EdgeType.Nothing;
             bool rectanglesWasOutField = false;
 
-            while ((numEdge < minNumberEdges) ||
-                ((tryPutMaxNumberEdge && maxNumberEdges > numEdge) && !(notOutFromFieldSize && rectanglesWasOutField)))
+            while ((numEdge < _generationSetting.MinNumberEdges) ||
+                ((_generationSetting.TryPutMaxNumberEdge && _generationSetting.MaxNumberEdges > numEdge) && !(_generationSetting.NotOutFromFieldSize && rectanglesWasOutField)))
             {
                 GenerateFinderDataDebug.DebugLogUpdate($"NumEdge={numEdge}");
 
@@ -124,15 +124,15 @@ namespace GameEngine.Environment
                 AngleType selectedAngleTypeBasePoint = SelectAngleTypeBasePoint(usedEdgeType);
                 GenerateFinderDataDebug.DebugLogUpdate($"basePoint={startPointOnEdge} selectedAngleType[{selectedAngleTypeBasePoint}]");
 
-                _secondRect = GetNewNormalizedRectangle(startPointOnEdge, selectedAngleTypeBasePoint);
+                _secondRect = GetRandomNewNormalizedRectangle(startPointOnEdge, selectedAngleTypeBasePoint);
 
-                rectanglesWasOutField = notOutFromFieldSize ? _secondRect.CutRectByFieldLimit(selectedAngleTypeBasePoint) : false;
+                rectanglesWasOutField = _generationSetting.NotOutFromFieldSize ? _secondRect.CutRectByFieldLimit(selectedAngleTypeBasePoint) : false;
 
                 _secondRect.Draw();
 
                 Vector2Int endPointEdge = FindEndPointEdge(startPointOnEdge, edgeTypeWhereWillNextRect, selectedAngleTypeBasePoint);
 
-                _pathFinderData.AddEdge(_firstRect, _secondRect, startPointOnEdge, endPointEdge, numEdge);
+                _pathFinderData.AddEdge(_firstRect, _secondRect, startPointOnEdge, endPointEdge);
 
                 _firstRect = _secondRect;
                 prevUsedEdgeType = edgeTypeWhereWillNextRect;
@@ -222,14 +222,14 @@ namespace GameEngine.Environment
             return possibleAngleTypesBasePoint.ElementAt(randomFromTwo);
         }
 
-        private NormalizedRectangle CreateInitialRec()
+        private NormalizedRectangle CreateRandomInitialRec()
         {
             Vector2Int basePoint = new Vector2Int(_generationSetting.CenterX, _generationSetting.CenterY);
 
             AngleType selectedAngleTypeBasePoint = SelectAnyAngleTypeForBasePoint();
 
             GenerateFinderDataDebug.DebugLogUpdate($"basePoint={basePoint} selectedAngleTypeForBasePoint[{selectedAngleTypeBasePoint}]");
-            NormalizedRectangle newNormalizedRectangle = GetNewNormalizedRectangle(basePoint, selectedAngleTypeBasePoint);
+            NormalizedRectangle newNormalizedRectangle = GetRandomNewNormalizedRectangle(basePoint, selectedAngleTypeBasePoint);
             newNormalizedRectangle.Draw();
 
             return newNormalizedRectangle;
@@ -314,15 +314,14 @@ namespace GameEngine.Environment
         /// <param name="basePoint"></param>
         /// <param name="selectedBasePointAngleType"></param>
         /// <returns></returns>
-        private NormalizedRectangle GetNewNormalizedRectangle(Vector2Int basePoint, AngleType selectedBasePointAngleType)
+        private NormalizedRectangle GetRandomNewNormalizedRectangle(Vector2Int basePoint, AngleType selectedBasePointAngleType)
         {
-            Vector2Int shiftToOtherAngleRectangel = GetShiftToOtherAngleRectangle(selectedBasePointAngleType);
-            //CountFrame.DebugLogUpdate($"initialBasePoint: [{selectedBasePointAngleType}]{basePoint} shift:{shiftToOtherAngleRectangel}");
+            Vector2Int shiftToOtherAngleRectangel = GetRandomShiftToOtherAngleRectangle(selectedBasePointAngleType);
             NormalizedRectangle newNormalizedRectangle = new NormalizedRectangle(basePoint, shiftToOtherAngleRectangel);
             return newNormalizedRectangle;
         }
 
-        private Vector2Int GetShiftToOtherAngleRectangle(AngleType basePointAngleType)
+        private Vector2Int GetRandomShiftToOtherAngleRectangle(AngleType basePointAngleType)
         {
             int widthRectangle = _random.Next(_generationSetting.MinWidthRectangle, (_maxWidthRectangle + 1));
             int heightRectangle = _random.Next(_generationSetting.MinHeightRectangle, (_maxHeightRectangle + 1));
